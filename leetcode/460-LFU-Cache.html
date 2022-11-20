@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Dancing+Script:300,300italic,400,400italic,700,700italic|Noto+Sans+SC:300,300italic,400,400italic,700,700italic|PT+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+
+  <meta name="description" content="Description Design and implement a data structure for Least Frequently Used (LFU) cache. It should support the following operations: get and put.  get(key) - Get the value (will always be positive) o">
+<meta property="og:type" content="website">
+<meta property="og:title" content="460. LFU Cache">
+<meta property="og:url" content="http://yoursite.com/leetcode/460-LFU-Cache.html">
+<meta property="og:site_name" content="Shawn&#39;s Blog">
+<meta property="og:description" content="Description Design and implement a data structure for Least Frequently Used (LFU) cache. It should support the following operations: get and put.  get(key) - Get the value (will always be positive) o">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/leetcode/uploads/DLinkedList.svg">
+<meta property="article:published_time" content="2020-02-08T05:04:30.000Z">
+<meta property="article:modified_time" content="2020-09-13T03:07:35.701Z">
+<meta property="article:author" content="Shawn Jiang">
+<meta property="article:tag" content="Double Linked List">
+<meta property="article:tag" content="Hashtable">
+<meta property="article:tag" content="Design">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/leetcode/uploads/DLinkedList.svg">
+
+
+<link rel="canonical" href="http://yoursite.com/leetcode/460-LFU-Cache">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+
+  <title>460. LFU Cache | Shawn's Blog
+</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Shawn's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-bars fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-designs">
+
+    <a href="/design/" rel="section"><i class="fa fa-book fa-fw"></i>Designs</a>
+
+  </li>
+
+
+      
+        
+            
+  <li class="menu-item menu-item-leetcode">
+
+    <a href="/leetcode/" rel="section"><i class="fa fa-sticky-note fa-fw"></i>Leetcode</a>
+
+  </li>
+
+
+      
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#description"><span class="nav-number">1.</span> <span class="nav-text"> Description</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sample-input-and-output"><span class="nav-number">2.</span> <span class="nav-text"> Sample Input and Output</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sample-input-analysis"><span class="nav-number"></span> <span class="nav-text"> Sample Input Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#solutions"><span class="nav-number">1.</span> <span class="nav-text"> Solutions</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#solution-1"><span class="nav-number">1.1.</span> <span class="nav-text"> Solution 1:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#data-structure"><span class="nav-number">1.1.1.</span> <span class="nav-text"> Data Structure:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#algorithm"><span class="nav-number">1.1.2.</span> <span class="nav-text"> Algorithm:</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#getkey"><span class="nav-number">1.1.2.1.</span> <span class="nav-text"> get(key):</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#putkey-value"><span class="nav-number">1.1.2.2.</span> <span class="nav-text"> put(key, value):</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#double-linked-list"><span class="nav-number">1.1.2.3.</span> <span class="nav-text"> Double Linked List:</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#resource"><span class="nav-number">2.</span> <span class="nav-text"> Resource</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Shawn Jiang"
+      src="/uploads/avatar.png">
+  <p class="site-author-name" itemprop="name">Shawn Jiang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Shawn0630" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Shawn0630" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sf.jiang.ca@gmail.com" title="E-Mail → mailto:sf.jiang.ca@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+      
+  
+
+      
+      
+
+      
+
+        
+        <ul class="sub-menu menu">
+          
+            
+          
+        </ul>
+        
+
+        
+
+                
+                
+
+                
+                
+        
+      
+  
+
+      
+
+    
+    
+    
+    <div class="post-block" lang="en">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">460. LFU Cache
+</h1>
+
+<div class="post-meta-container">
+  
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+          <h3 id="description"><a class="markdownIt-Anchor" href="#description"></a> Description</h3>
+<p>Design and implement a data structure for Least Frequently Used (LFU) cache. It should support the following operations: get and put.</p>
+<ul>
+<li><code>get(key)</code> - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.</li>
+<li><code>put(key, value)</code> - Set or insert the value if the key is not already present. When the cache reaches its capacity, it should invalidate the least frequently used item before inserting a new item. For the purpose of this problem, when there is a tie (i.e., two or more keys that have the same frequency), the least recently used key would be evicted.</li>
+</ul>
+<p>Note that the number of times an item is used is the number of calls to the get and put functions for that item since it was inserted. This number is set to zero when the item is removed.</p>
+<a id="more"></a>
+<h3 id="sample-input-and-output"><a class="markdownIt-Anchor" href="#sample-input-and-output"></a> Sample Input and Output</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">LFUCache cache = <span class="keyword">new</span> LFUCache( <span class="number">2</span> <span class="comment">/* capacity */</span> );</span><br><span class="line"></span><br><span class="line">cache.put(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">cache.put(<span class="number">2</span>, <span class="number">2</span>);</span><br><span class="line">cache.get(<span class="number">1</span>);       <span class="comment">// returns 1</span></span><br><span class="line">cache.put(<span class="number">3</span>, <span class="number">3</span>);    <span class="comment">// evicts key 2</span></span><br><span class="line">cache.get(<span class="number">2</span>);       <span class="comment">// returns -1 (not found)</span></span><br><span class="line">cache.get(<span class="number">3</span>);       <span class="comment">// returns 3.</span></span><br><span class="line">cache.put(<span class="number">4</span>, <span class="number">4</span>);    <span class="comment">// evicts key 1.</span></span><br><span class="line">cache.get(<span class="number">1</span>);       <span class="comment">// returns -1 (not found)</span></span><br><span class="line">cache.get(<span class="number">3</span>);       <span class="comment">// returns 3</span></span><br><span class="line">cache.get(<span class="number">4</span>);       <span class="comment">// returns 4</span></span><br></pre></td></tr></table></figure>
+<h2 id="sample-input-analysis"><a class="markdownIt-Anchor" href="#sample-input-analysis"></a> Sample Input Analysis</h2>
+<!-- |  Operation   | LFU&#123;&#123;key, value, freq&#125;&#125;            | Output |
+|  ----------  | -----------------------------------------------------  | ------ |
+|   put(1, 1)  |   &#123;&#123;1, 1, 1&#125;&#125;                      |   NA   |  
+|   put(2, 2)  |   &#123;&#123;2, 2, 1&#125;, &#123;1, 1, 1&#125;&#125; |   NA   |
+|   get(1)     |   &#123;&#123;1, 1, 2&#125;, &#123;2, 2, 1&#125;&#125; |   1    |
+|   put(3, 3)  |   &#123;&#123;1, 1, 2&#125;, &#123;3, 3, 1&#125;&#125; |   NA   |
+|   get(2)     |   &#123;&#123;1, 1, 2&#125;, &#123;3, 3, 1&#125;&#125; |   -1   |
+|   get(3)     |   &#123;&#123;3, 3, 2&#125;, &#123;1, 1, 2&#125;&#125; |   3    |
+|   put(4, 4)  |   &#123;&#123;3, 3, 2&#125;, &#123;4, 4, 1&#125;&#125; |   NA   |
+|   get(1)     |   &#123;&#123;3, 3, 2&#125;, &#123;4, 4, 1&#125;&#125; |   -1   |
+|   get(3)     |   &#123;&#123;3, 3, 3&#125;, &#123;4, 4, 1&#125;&#125; |   3    |
+|   get(4)     |   &#123;&#123;3, 3, 3&#125;, &#123;4, 4, 2&#125;&#125; |   4    | -->
+<table>
+    <tr>
+        <td>Operation	</td>
+        <td>LFU&#123;&#123;key, value, freq&#125;&#125;</td>
+        <td>Output</td>
+    </tr>
+    <tr>
+        <td> put(1, 1)</td>
+        <td>&#123;&#123;1, 1, 1&#125;&#125;</td>
+        <td>NA</td>
+    </tr>
+    <tr>
+        <td>put(2, 2)</td>
+        <td>&#123;&#123;2, 2, 1&#125;, &#123;1, 1, 1&#125;&#125;</td>
+        <td>NA</td>
+    </tr>
+    <tr>
+        <td>get(1)</td>
+        <td>&#123;&#123;1, 1, 2&#125;, &#123;2, 2, 1&#125;&#125;</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>put(3, 3)</td>
+        <td>&#123;&#123;1, 1, 2&#125;, &#123;3, 3, 1&#125;&#125;</td>
+        <td>NA</td>
+    </tr>
+    <tr>
+        <td>get(2)</td>
+        <td>&#123;&#123;1, 1, 2&#125;, &#123;3, 3, 1&#125;&#125;</td>
+        <td>-1</td>
+    </tr>
+    <tr>
+        <td>get(3)</td>
+        <td>&#123;&#123;3, 3, 2&#125;, &#123;1, 1, 2&#125;&#125;</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>put(4, 4)</td>
+        <td>&#123;&#123;3, 3, 2&#125;, &#123;4, 4, 1&#125;&#125;</td>
+        <td>NA</td>
+    </tr>
+    <tr>
+        <td>get(1)</td>
+        <td>&#123;&#123;3, 3, 2&#125;, &#123;4, 4, 1&#125;&#125;</td>
+        <td>-1</td>
+    </tr>
+    <tr>
+        <td>get(3)</td>
+        <td>&#123;&#123;3, 3, 3&#125;, &#123;4, 4, 1&#125;&#125;</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>get(4)</td>
+        <td>&#123;&#123;3, 3, 3&#125;, &#123;4, 4, 2&#125;&#125;</td>
+        <td>4</td>
+    </tr>
+</table>
+<h3 id="solutions"><a class="markdownIt-Anchor" href="#solutions"></a> Solutions</h3>
+<h4 id="solution-1"><a class="markdownIt-Anchor" href="#solution-1"></a> Solution 1:</h4>
+<div class="tabs" id="solution-1"><ul class="nav-tabs"><li class="tab active"><a href="#solution-1-1">Data Structure && Algorithm</a></li><li class="tab"><a href="#solution-1-2">Implementation</a></li></ul><div class="tab-content"><div class="tab-pane active" id="solution-1-1"><h5 id="data-structure"><a class="markdownIt-Anchor" href="#data-structure"></a> Data Structure:</h5>
+<ul>
+<li><strong>Frequency table:</strong> A hashmap to store the mapping of different frequency values with values as DLLs storing (key, value) pairs as nodes</li>
+<li><strong>Cache Dicitionary</strong>: Nodes in the DLL are stored as values for each key pushed into the cache</li>
+</ul>
+<h5 id="algorithm"><a class="markdownIt-Anchor" href="#algorithm"></a> Algorithm:</h5>
+<h6 id="getkey"><a class="markdownIt-Anchor" href="#getkey"></a> get(key):</h6>
+<ol>
+<li>If key is not present in cache, return -1</li>
+<li>Get the node from the cache</li>
+<li>Update the node frequency</li>
+<li>Remove the node from the DLL of node’s previous frequency</li>
+<li>Add the node to the DLL with the node’s updated frequency</li>
+<li>Update min frequency value</li>
+</ol>
+<h6 id="putkey-value"><a class="markdownIt-Anchor" href="#putkey-value"></a> put(key, value):</h6>
+<ul>
+<li>If key is present in cache
+<ol>
+<li>Similar logic to that of get function</li>
+<li>Only difference being that we need to update the value here</li>
+</ol>
+</li>
+<li>If key not present in cache
+<ol>
+<li>If the cache has already reached it’s capacity, delete the tail node from the DLL with least frequency</li>
+<li>Create the new node with the (key, value) pair passed as arguments</li>
+<li>Add the node to the frequency table with frequency key = 1</li>
+<li>Add the node to the cache</li>
+<li>Update min frequency to be 1</li>
+</ol>
+</li>
+</ul>
+<h6 id="double-linked-list"><a class="markdownIt-Anchor" href="#double-linked-list"></a> Double Linked List:</h6>
+<p><img src="/leetcode/uploads/DLinkedList.svg" alt></p></div><div class="tab-pane" id="solution-1-2"><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LFUCache</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Node&gt; map;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, DLinkedList&gt; freq;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> capacity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> min_feq;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LFUCache</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.capacity = capacity;</span><br><span class="line">        map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        freq = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        min_feq = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (map.get(key) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Node node = map.get(key);</span><br><span class="line">            freq.get(node.freq).remove(node);</span><br><span class="line">            <span class="keyword">if</span> (min_feq == node.freq &amp;&amp; freq.get(node.freq).isEmpty()) &#123;</span><br><span class="line">                min_feq++;</span><br><span class="line">            &#125;</span><br><span class="line">            node.freq++;</span><br><span class="line">            freq.computeIfAbsent(node.freq, ignore -&gt; <span class="keyword">new</span> DLinkedList());</span><br><span class="line">            freq.get(node.freq).push_head(node);</span><br><span class="line">            <span class="keyword">return</span> node.value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> key, <span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (capacity == <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (map.get(key) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (map.size() == capacity) &#123;</span><br><span class="line">                Node node = freq.get(min_feq).remove_tail();</span><br><span class="line">                map.remove(node.key);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Node node = <span class="keyword">new</span> Node(key, value);</span><br><span class="line">            freq.computeIfAbsent(node.freq, ignore -&gt; <span class="keyword">new</span> DLinkedList());</span><br><span class="line">            freq.get(node.freq).push_head(node);</span><br><span class="line">            map.put(key, node);</span><br><span class="line">            min_feq = <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            get(key);</span><br><span class="line">            map.get(key).value = value;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> key;</span><br><span class="line">        <span class="keyword">int</span> freq;</span><br><span class="line">        <span class="keyword">int</span> value;</span><br><span class="line">        Node prev, next;</span><br><span class="line"></span><br><span class="line">        Node(<span class="keyword">int</span> key, <span class="keyword">int</span> value) &#123;</span><br><span class="line">            <span class="keyword">this</span>.key = key;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">            freq = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DLinkedList</span> </span>&#123;</span><br><span class="line">        Node head, tail;</span><br><span class="line">        <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line">        DLinkedList() &#123;</span><br><span class="line">            head = <span class="keyword">new</span> Node(-<span class="number">1</span>, -<span class="number">1</span>);</span><br><span class="line">            tail = <span class="keyword">new</span> Node(-<span class="number">1</span>, -<span class="number">1</span>);</span><br><span class="line">            head.next = tail;</span><br><span class="line">            tail.prev = head;</span><br><span class="line">            size = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push_head</span><span class="params">(Node node)</span> </span>&#123;</span><br><span class="line">            head.next.prev = node;</span><br><span class="line">            node.next = head.next;</span><br><span class="line">            head.next= node;</span><br><span class="line">            node.prev = head;</span><br><span class="line">            size++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Node <span class="title">remove_tail</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (size == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            Node node = tail.prev;</span><br><span class="line"></span><br><span class="line">           remove(node);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(Node node)</span> </span>&#123;</span><br><span class="line">            size--;</span><br><span class="line">            node.next.prev = node.prev;</span><br><span class="line">            node.prev.next = node.next;</span><br><span class="line"></span><br><span class="line">            node.next = <span class="keyword">null</span>;</span><br><span class="line">            node.prev = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> size == <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div></div>
+<h3 id="resource"><a class="markdownIt-Anchor" href="#resource"></a> Resource</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://leetcode.com/problems/lfu-cache/">460. LFU Cache</a></li>
+</ul>
+
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
+    
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Shawn Jiang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
